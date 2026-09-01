@@ -1,0 +1,3 @@
+1- The file in the root named "VF_3d_path_following.mlx" is the kinematic simulation of the Combined vector field approach described the paper by "Combined vector field path following of UAV" by "Liang et. al.".
+2- The folder's "v1", "v2", and "v3" are the attempts to simulate the kinematic path following algorithm with the full quadcopter dynamics. ("v3" is the folder, where the simulation finally worked).
+3- The one pdf in the root is nothing but the paper mentioned above which is being referenced.

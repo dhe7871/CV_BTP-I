@@ -1,0 +1,181 @@
+function plotFigures(params, pathParams, kineState, state, miscState)
+    figure; %figure 1
+    if(pathParams.pathChoice == 1)
+        plot3([pathParams.w1(1), pathParams.w2(1)], [pathParams.w1(2), pathParams.w2(2)], [pathParams.p0(3), pathParams.p0(3)], "LineStyle", "--", "LineWidth", 1.5);
+        j = 1; k = 4; l = 7;
+    elseif(pathParams.pathChoice == 3)
+        xmx = max(kineState(1, :)); xmn = min(kineState(1, :));
+        xmx = xmx + (xmx - xmn)*0.25; xmn = xmn - (xmx - xmn)*0.25;
+        ymx = max(kineState(4, :)); ymn = min(kineState(4, :));
+        ymx = ymx + (ymx - ymn)*0.25; ymn = ymn - (ymx - ymn)*0.25;
+
+
+        fimplicit(pathParams.fn, [xmn xmx ymn ymx], "LineStyle","--", "LineWidth",1.5, "Color","#ff0055");
+        j = 1; k = 4; l = 7;
+    elseif (pathParams.pathChoice == 2)
+        plot3(pathParams.curve(1, :), pathParams.curve(2, :), pathParams.curve(3, :), "LineStyle", "--", "LineWidth", 1.5);
+        j = 1; k = 2; l = 3;
+    end
+    
+    hold on; grid on; grid minor;
+    % axis equal;
+    plot3(kineState(j, :), kineState(k, :), kineState(l, :), "LineStyle", ":", "LineWidth", 1.5);
+    scatter3(state(1, 1), state(3, 1), state(5, 1), 70, "Marker", "o", "LineWidth", 1.5);
+    plot3(state(1, :), state(3, :), state(5, :), "LineWidth", 1.5);
+    scatter3(state(1, end), state(3, end), state(5, end), 50, "Marker", "^", 'LineWidth', 1);
+    xlabel("x[m]");
+    ylabel("y[m]");
+    zlabel("z[m]");
+    legend("Line to follow", "Kinematic State from path generator", "Initial Position",...
+        "Actual States of the QuadCopter", "Current State of QuadCopter");
+    hold off;
+
+    figure; %figure 2
+    subplot(3, 3, 1);
+    plot(0:params.dt:params.simTime, state(2, :), "LineWidth",1.5);
+    hold on; grid on; grid minor;
+    xlabel("Time [s]");
+    ylabel("dx/dt [m/s]");
+    hold off;
+
+    subplot(3, 3, 2);
+    plot(0:params.dt:params.simTime, state(4, :), "LineWidth",1.5);
+    hold on; grid on; grid minor;
+    xlabel("Time [s]");
+    ylabel("dy/dt [m/s]");
+    hold off;
+
+    subplot(3, 3, 3);
+    plot(0:params.dt:params.simTime, state(6, :), "LineWidth",1.5);
+    hold on; grid on; grid minor;
+    xlabel("Time [s]");
+    ylabel("dz/dt [m/s]");
+    hold off;
+
+    subplot(3, 3, 4);
+    plot(0:params.dt:params.simTime, miscState(5, :)*180/pi, "LineWidth", 1.5, "LineStyle", ":");
+    hold on; grid on; grid minor;
+    plot(0:params.dt:params.simTime, state(7, :)*180/pi, "LineWidth",1.5);
+    xlabel("Time [s]");
+    ylabel("\phi [deg]");
+    hold off;
+
+    subplot(3, 3, 5);
+    plot(0:params.dt:params.simTime, miscState(6, :)*180/pi, "LineWidth", 1.5, "LineStyle", ":");
+    hold on; grid on; grid minor;
+    plot(0:params.dt:params.simTime, state(9, :)*180/pi, "LineWidth",1.5);
+    xlabel("Time [s]");
+    ylabel("\theta [deg]");
+    hold off;
+
+    subplot(3, 3, 6);
+    plot(0:params.dt:params.simTime, miscState(7, :)*180/pi, "LineWidth", 1.5, "LineStyle", ":");
+    hold on; grid on; grid minor;
+    plot(0:params.dt:params.simTime, state(11, :)*180/pi, "LineWidth",1.5);
+    xlabel("Time [s]");
+    ylabel("\psi [deg]");
+    hold off;
+
+    subplot(3, 3, 7);
+    plot(0:params.dt:params.simTime, state(8, :), "LineWidth",1.5);
+    hold on; grid on; grid minor;
+    xlabel("Time [s]");
+    ylabel("d\phi/dt [rad/s]");
+    hold off;
+
+    subplot(3, 3, 8);
+    plot(0:params.dt:params.simTime, state(10, :), "LineWidth",1.5);
+    hold on; grid on; grid minor;
+    xlabel("Time [s]");
+    ylabel("d\theta/dt [rad/s]");
+    hold off;
+
+    subplot(3, 3, 9);
+    plot(0:params.dt:params.simTime, state(12, :), "LineWidth",1.5);
+    hold on; grid on; grid minor;
+    xlabel("Time [s]");
+    ylabel("d\psi/dt [rad/s]");
+    hold off;
+
+
+    figure; %figure 3
+    subplot(2, 2, 1);
+    plot(0:params.dt:params.simTime, miscState(1, :), "LineWidth", 1.5);
+    hold on; grid on; grid minor;
+    xlabel("Time [s]");
+    ylabel("\Omega_1 [rpm]");
+    hold off;
+
+    subplot(2, 2, 2);
+    plot(0:params.dt:params.simTime, miscState(2, :), "LineWidth", 1.5);
+    hold on; grid on; grid minor;
+    xlabel("Time [s]");
+    ylabel("\omega_2 [rpm]");
+    hold off;
+
+    subplot(2, 2, 3);
+    plot(0:params.dt:params.simTime, miscState(3, :), "LineWidth", 1.5);
+    hold on; grid on; grid minor;
+    xlabel("Time [s]");
+    ylabel("\omega_3 [rpm]");
+    hold off;
+
+    subplot(2, 2, 4);
+    plot(0:params.dt:params.simTime, miscState(4, :), "LineWidth", 1.5);
+    hold on; grid on; grid minor;
+    xlabel("Time [s]");
+    ylabel("\omega_4 [rpm]");
+    hold off;
+
+    figure; %figure 4
+    subplot(2, 3, 1);
+    plot(0:params.dt:params.simTime, kineState(1, :), "LineStyle", ":", "LineWidth",1.5, "DisplayName", "From Kinematics")
+    hold on; grid on; grid minor;
+    plot(0:params.dt:params.simTime, state(1, :), "LineWidth", 1.5, "DisplayName", "Actual");
+    xlabel("Time [s]");
+    ylabel("x [m]");
+    hold off;
+
+    subplot(2, 3, 2);
+    logic = pathParams.pathChoice == 1 || pathParams.pathChoice == 3;
+    k = (logic)*4 + (pathParams.pathChoice == 2)*2;
+    plot(0:params.dt:params.simTime, kineState(k, :), "LineStyle", ":", "LineWidth",1.5, "DisplayName", "From Kinematics")
+    hold on; grid on; grid minor;
+    plot(0:params.dt:params.simTime, state(3, :), "LineWidth", 1.5, "DisplayName", "Actual");
+    xlabel("Time [s]");
+    ylabel("y [m]");
+    hold off;
+
+    subplot(2, 3, 3);
+    k = (logic)*7 + (pathParams.pathChoice == 2)*3;
+    plot(0:params.dt:params.simTime, kineState(k,:), "LineStyle", ":", "LineWidth",1.5, "DisplayName", "From Kinematics")
+    hold on; grid on; grid minor;
+    plot(0:params.dt:params.simTime, state(5, :), "LineWidth", 1.5, "DisplayName", "Actual");
+    xlabel("Time [s]");
+    ylabel("z [m]");
+    hold off;
+    
+    subplot(2, 3, 4);
+    plot(0:params.dt:params.simTime, miscState(5, :)*180/pi, "LineWidth", 1.5, "LineStyle", ":", "DisplayName", "From Kinematics");
+    hold on; grid on; grid minor;
+    plot(0:params.dt:params.simTime, state(7, :)*180/pi, "LineWidth", 1.5, "DisplayName", "Actual");
+    xlabel("Time [s]");
+    ylabel("\phi [deg]");
+    hold off;
+
+    subplot(2, 3, 5);
+    plot(0:params.dt:params.simTime, miscState(6, :)*180/pi, "LineWidth", 1.5, "LineStyle", ":", "DisplayName", "From Kinematics");
+    hold on; grid on; grid minor;
+    plot(0:params.dt:params.simTime, state(9, :)*180/pi, "LineWidth", 1.5, "DisplayName", "Actual");
+    xlabel("Time [s]");
+    ylabel("\theta [deg]");
+    hold off;
+
+    subplot(2, 3, 6);
+    plot(0:params.dt:params.simTime, miscState(7, :)*180/pi, "LineWidth", 1.5, "LineStyle", ":", "DisplayName", "From Kinematics");
+    hold on; grid on; grid minor;
+    plot(0:params.dt:params.simTime, state(11, :)*180/pi, "LineWidth", 1.5, "DisplayName", "Actual");
+    xlabel("Time [s]");
+    ylabel("\psi [deg]");
+    hold off;
+end

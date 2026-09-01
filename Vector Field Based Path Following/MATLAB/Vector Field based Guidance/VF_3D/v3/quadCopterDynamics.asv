@@ -1,0 +1,43 @@
+function state = quadCopterDynamics(params, state, U)
+    wx = params.w(1); wy = params.wy(2); wz = params.w(3);
+    phi = state(7); theta = state(9); psi = state(11);
+    [~ , Rib, C, ~] = rotationMatrices(phi, theta, psi);
+
+    %X: [x, y, z, u, v, w, phi, theta, psi, p, q, r]
+    X = zeros(12, 1);
+    X(1:3) = state([1, 3, 5]);
+    X(4:6) = Rib*(state([2, 4, 6]) - [wx, wy, wz]');
+    X(7:9) = state([7, 9, 11]);
+    X(10:12) = C*state([8, 10, 12]);
+
+    %implementing RK4 Integration
+    k1 = dynamics(params, X, U);
+    k2 = dynamics(params, X + k1*params.dt/2, U);
+    k3 = dynamics(params, X + k2*params.dt/2, U);
+    k4 = dynamics(params, X + k3*params.dt, U);
+
+    X = X + (params.dt/6)*(k1 + 2*k2 + 2*k3 + k4);
+
+    phi = X(7); theta = X(8); psi = X(9);
+    [Rbi, ~, ~, invC] = rotationMatrices(phi, theta, psi);
+
+    state([1, 3, 5]) = X(1:3);
+    state([2, 4, 6]) = Rbi*X(4:6);
+    state([7, 9, 11]) = wrapToPi(X(7:9));
+    state([8, 10, 12]) = invC*X(10:12);
+end
+
+function dX = dynamics(params, X, U)
+    U1 = U(1); U2 = U(2); U3 = U(3); U4 = U(4);
+    
+    phi = X(7); theta = X(8); psi = X(9);
+    [Rbi, Rib, ~, invC] = rotationMatrices(phi, theta, psi);
+
+    dX = zeros(12, 1);
+    dX(1:3) = Rbi*X(4:6);
+    dX(4:6) = Rib*[0, 0 -params.g]' + [0, 0, U1/params.m]' - cross(X(10:12), X(4:6));
+    dX(7:9) = invC*X(10:12);
+    
+    taub = [U2*params.l, U3*params.l, U4]';
+    dX(10:12) = params.invI*(taub - cross(X(10:12), params.I*X(10:12)));
+end

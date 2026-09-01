@@ -1,0 +1,1 @@
+Simulated the 2D aspect of the paper "Combined Vector Field Path Following" by "Liang et. al.".
